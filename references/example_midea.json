@@ -1,0 +1,58 @@
+{
+  "company": "美的集团",
+  "hud_name": "Midea Group",
+  "output_name": "midea_brand_film",
+  "years": "1968 — 2026",
+  "wordmark": {"text": "美的", "latin": "Midea"},
+  "slogan": "科技尽善  ·  生活尽美",
+  "tagline": "从一只瓶盖，到全球智造",
+
+  "palette": {
+    "dark": "#0C0D0F", "dark2": "#1C1E22", "light": "#ECE9E3", "deep": "#0C285C",
+    "accent": "#C9A36A", "brand": "#0058A8", "metal": "#C4C8CE", "warm": "#FFB058",
+    "text_dark": "#0C0D0F", "text_light": "#ECE9E3", "muted": "#8C9198"
+  },
+  "grade": {"nostalgia": true, "warm_until": 32},
+  "music": {"key": "C", "bpm1": 96, "bpm2": 128, "mood": "warm", "theme": "uplift"},
+
+  "part1": {"scenes": [
+    {"type": "origin", "bars": 3, "year": "1968", "place": "广东顺德 · 北滘", "title": "一间街道小作坊的起点",
+     "side": ["23 位街坊  ·  集资 5000 元", "从一只小小的塑料瓶盖开始"], "icon": "cap"},
+    {"type": "milestone", "bars": 3, "flow": "wind", "items": [
+      {"year": "1980", "title": "第一台电风扇下线", "sub": "从塑料件走向家电", "icon": "fan"},
+      {"year": "1981", "title": "“美的”品牌诞生", "sub": "一阵风，吹进寻常百姓家", "icon": "wind"}]},
+    {"type": "milestone", "bars": 3, "flow": "rise", "items": [
+      {"year": "1985", "title": "进军空调产业", "sub": "清凉，走进千家万户", "icon": "ac",
+       "counter": {"from": 35, "to": 26, "suffix": "°"}}]},
+    {"type": "city", "bars": 5, "year": "1993", "title": "登陆深圳证券交易所", "sub": "一家乡镇企业，走向资本市场",
+     "text": "从一扇窗，到万家灯火"},
+    {"type": "network", "bars": 4, "year": "2010s", "title": "智能家居 · 全屋互联", "sub": "家电之间，开始彼此对话",
+     "lines2": ["一句话，全屋响应", "科技，懂得每一个家的习惯"], "hub": "AI",
+     "nodes": [{"label": "空调", "icon": "ac"}, {"label": "冰箱", "icon": "fridge"}, {"label": "洗衣机", "icon": "washer"},
+               {"label": "厨房", "icon": "cup"}, {"label": "照明", "icon": "bulb"}, {"label": "净水", "icon": "drop"}]},
+    {"type": "bridge", "text": "而这，只是开始"}
+  ]},
+
+  "part2": {"sections": [
+    {"type": "dots"},
+    {"type": "slam", "line1": "不止于", "box": "家电", "line2a": "更是", "line2b": "全球智造",
+     "label": "BEYOND APPLIANCES  —  A GLOBAL TECHNOLOGY GROUP"},
+    {"type": "shapes", "caption": "一台家电，到一个生态",
+     "items": [["风", "FAN"], ["冷", "AIR"], ["智", "INTELLIGENCE"], ["鲜", "FRESH"], ["净", "CARE"], ["联", "CONNECT"],
+               ["家", "HOME"], ["造", "MAKE"]]},
+    {"type": "grid", "title": "灯塔工厂", "label": "LIGHTHOUSE FACTORY  ·  WORLD ECONOMIC FORUM",
+     "subs": ["每一台设备，都在实时对话", "数据驱动  ·  柔性制造  ·  智能调度"]},
+    {"type": "cloud", "title": "楼宇科技", "label": "BUILDING TECHNOLOGIES",
+     "subs": ["暖通空调  ·  楼宇智控  ·  数据中心", "为城市，精准调节每一度"]},
+    {"type": "ribbon", "title": "KUKA", "sub": "库卡  ·  机器人与自动化", "arm": true,
+     "subs": ["工业机器人  ·  智能物流  ·  医疗自动化", "每一条轨迹，都精准可控"]},
+    {"type": "words",
+     "rows": ["智能家居  ·  楼宇科技  ·  机器人与自动化  ·  数字化  ·", "SMART HOME  •  BUILDING TECHNOLOGIES  •  ROBOTICS & AUTOMATION  •",
+              "新能源  ·  医疗科技  ·  工业技术  ·  全球研发  ·", "温度  ·  风  ·  光  ·  水  ·  空气  ·  家  ·",
+              "NEW ENERGY  •  HEALTHCARE  •  INDUSTRIAL TECHNOLOGY  •"],
+     "rings": ["智能家居 · 楼宇科技 · 机器人与自动化 · 数字化 · 新能源", "SMART HOME · BUILDING TECHNOLOGIES · ROBOTICS · NEW ENERGY",
+               "温度 · 风 · 光 · 水 · 空气 · 家 · 温度 · 风 · 光 · 水 · 空气 · 家"]},
+    {"type": "numbers", "items": [["200+", "国家和地区"], ["500", "《财富》世界 500 强"]]},
+    {"type": "logo"}
+  ]}
+}
