@@ -67,8 +67,13 @@ def _call(method, path, body=None, query=None, timeout=180, retries=6):
                 msg = f'HTTP {e.code}: {txt[:300]}'
             if e.code in (429, 500, 503) and attempt < retries - 1:
                 import re
-                hint = re.search(r'retry in ([0-9.]+)s', msg)           # free tier: 3 requests/min -> obey server hint
-                wait = float(hint.group(1)) + 1.5 if hint else min(60, 4 * 2 ** attempt)
+                hint = re.search(r'retry in ((?:\d+h)?(?:\d+m)?(?:[0-9.]+s)?)', msg)   # obey server hint (free tier 3 RPM)
+                wait = min(60, 4 * 2 ** attempt)
+                if hint and hint.group(1):
+                    hms = dict((u, float(v)) for v, u in re.findall(r'([0-9.]+)([hms])', hint.group(1)))
+                    wait = hms.get('h', 0) * 3600 + hms.get('m', 0) * 60 + hms.get('s', 0) + 1.5
+                if wait > 120:                                          # daily quota exhausted: don't sit on it
+                    raise TTSError(_scrub(msg)) from None
                 print(f'  {e.code}, retrying in {wait:.0f}s', file=sys.stderr, flush=True)
                 time.sleep(wait)
                 continue
