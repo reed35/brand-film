@@ -2,47 +2,47 @@
  "model": "gemini-3.8-flash-tts",
  "rpm": 12,
  "retries": 4,
- "style": "Lively, warm popular-science host talking to curious beginners. Natural, steady conversational pace: engaged but not rushed. Clear standard Mandarin, a light smile in the voice, brief pauses at commas and full stops, lift slightly on the question.",
+ "style": "Warm, curious popular-science host explaining to complete beginners. Measured, unhurried pace with every syllable clearly articulated, never rushed. Lively and engaged, a light smile in the voice. Natural pauses at commas, slightly longer at full stops; lift slightly on the question.",
  "lines": [
   {
    "text": "伸出手，看看你的指甲盖。就在这一秒，大约650亿个来自太阳的粒子，正从它中间穿过。你毫无感觉。它们叫中微子。",
    "voice": "Charon",
-   "out": "s01"
+   "out": "s01_v2"
   },
   {
    "text": "中微子不带电，几乎没有质量，能一口气穿透整个地球，所以被叫作“幽灵粒子”。想抓住它，难如登天。",
    "voice": "Charon",
-   "out": "s02"
+   "out": "s02_v2"
   },
   {
    "text": "2026年诺贝尔物理学奖，就颁给了一位抓幽灵的人：弗朗西斯·哈尔岑。这是三十多年来，物理学奖第一次只颁给一个人。",
    "voice": "Charon",
-   "out": "s03"
+   "out": "s03_v2"
   },
   {
    "text": "他的思路很大胆：抓不住，就把网撒大。南极冰盖深处的冰，纯净、透明、一片漆黑。科学家在一立方公里的冰里，埋下5160只光学“眼睛”，这就是冰立方。",
    "voice": "Charon",
-   "out": "s04"
+   "out": "s04_v2"
   },
   {
    "text": "偶尔，一个中微子撞上冰里的原子核，激发出一道微弱的蓝光。记下这道光，就能算出它从哪来、带着多少能量。",
    "voice": "Charon",
-   "out": "s05"
+   "out": "s05_v2"
   },
   {
    "text": "2013年，冰立方拿到了第一批证据：一些能量极高的中微子，来自太阳系之外的遥远宇宙。一颗比原子还小的粒子，能量竟超过一只飞行的蚊子。",
    "voice": "Charon",
-   "out": "s06"
+   "out": "s06_v2"
   },
   {
    "text": "这为什么重要？光会被尘埃挡住，带电粒子会被磁场带偏，只有中微子一路直行，像一支箭，指回它的出发地：宇宙里最狂暴的天然加速器。人类看宇宙，从此多了一双新眼睛。",
    "voice": "Charon",
-   "out": "s07"
+   "out": "s07_v2"
   },
   {
    "text": "从1988年提出设想，到2011年建成，再到捕获宇宙中微子，哈尔岑走了二十多年。有时候，最安静的信使，带来最遥远的消息。",
    "voice": "Charon",
-   "out": "s08"
+   "out": "s08_v2"
   }
  ]
 }
