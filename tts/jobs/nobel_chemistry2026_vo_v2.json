@@ -1,0 +1,212 @@
+{
+ "model": "gemini-3.8-flash-tts",
+ "rpm": 12,
+ "retries": 4,
+ "style": "Warm, lively Mandarin popular-science host explaining to beginners. Natural conversational pace - engaged and moving forward, not slow, never rushed. Clear articulation of every syllable; natural short pauses at commas, slightly longer at full stops; lift slightly on questions.",
+ "lines": [
+  {
+   "text": "同一种分子，为什么可能是良药，也可能闯下大祸？",
+   "voice": "Charon",
+   "style": "Warm, lively Mandarin popular-science host explaining to beginners. Natural conversational pace - engaged and moving forward, not slow, never rushed. Clear articulation of every syllable; natural short pauses at commas, slightly longer at full stops; lift slightly on questions.",
+   "out": "s01_A"
+  },
+  {
+   "text": "上世纪六十年代，孕妇服用的镇静药沙利度胺，让数以千计的婴儿四肢残缺。后来发现，这种分子有“左手”和“右手”两个版本，在体内作用不同。",
+   "voice": "Charon",
+   "style": "Warm, lively Mandarin popular-science host explaining to beginners. Natural conversational pace - engaged and moving forward, not slow, never rushed. Clear articulation of every syllable; natural short pauses at commas, slightly longer at full stops; lift slightly on questions.",
+   "out": "s02_A"
+  },
+  {
+   "text": "分子怎么会有左右手？伸出双手：它们互为镜像，却怎么转都叠不到一起。很多分子也这样，这叫“手性”。",
+   "voice": "Charon",
+   "style": "Warm, lively Mandarin popular-science host explaining to beginners. Natural conversational pace - engaged and moving forward, not slow, never rushed. Clear articulation of every syllable; natural short pauses at commas, slightly longer at full stops; lift slightly on questions.",
+   "out": "s03_A"
+  },
+  {
+   "text": "最早看见它的，是一八四八年的巴斯德。他发现酒石酸盐的晶体分成镜像的两种，就用镊子一颗颗挑开。",
+   "voice": "Charon",
+   "style": "Warm, lively Mandarin popular-science host explaining to beginners. Natural conversational pace - engaged and moving forward, not slow, never rushed. Clear articulation of every syllable; natural short pauses at commas, slightly longer at full stops; lift slightly on questions.",
+   "out": "s04_A"
+  },
+  {
+   "text": "更怪的是，生命只用一只手。蛋白质里的氨基酸，几乎全是左手型。身体里的“锁”也分左右，药分子得是对的那把“钥匙”。",
+   "voice": "Charon",
+   "style": "Warm, lively Mandarin popular-science host explaining to beginners. Natural conversational pace - engaged and moving forward, not slow, never rushed. Clear articulation of every syllable; natural short pauses at commas, slightly longer at full stops; lift slightly on questions.",
+   "out": "s05_A"
+  },
+  {
+   "text": "可在烧瓶里，左右手总是一半对一半。怎么只造一种？办法是手性催化剂，它像一副左手手套模具，专门压出左手分子。这条路拿了二〇〇一年诺奖。",
+   "voice": "Charon",
+   "style": "Warm, lively Mandarin popular-science host explaining to beginners. Natural conversational pace - engaged and moving forward, not slow, never rushed. Clear articulation of every syllable; natural short pauses at commas, slightly longer at full stops; lift slightly on questions.",
+   "out": "s06_A"
+  },
+  {
+   "text": "但大家默认：模具多纯，产品就多纯。更大的谜是：最早的生命没有纯模具，单一手性从哪儿来？",
+   "voice": "Charon",
+   "style": "Warm, lively Mandarin popular-science host explaining to beginners. Natural conversational pace - engaged and moving forward, not slow, never rushed. Clear articulation of every syllable; natural short pauses at commas, slightly longer at full stops; lift slightly on questions.",
+   "out": "s07_A"
+  },
+  {
+   "text": "一九五三年，物理学家弗兰克写下一份“配方”：产物要能复制自己，还要压住自己的镜像。几十年来，没人做得出。",
+   "voice": "Charon",
+   "style": "Warm, lively Mandarin popular-science host explaining to beginners. Natural conversational pace - engaged and moving forward, not slow, never rushed. Clear articulation of every syllable; natural short pauses at commas, slightly longer at full stops; lift slightly on questions.",
+   "out": "s08_A"
+  },
+  {
+   "text": "一九八六年，法国化学家卡根打破了默认。他想到，催化剂常常是两个手性分子抱着一个金属原子干活。左配左、右配右，干得快；一左一右的混搭，几乎干不动。",
+   "voice": "Charon",
+   "style": "Warm, lively Mandarin popular-science host explaining to beginners. Natural conversational pace - engaged and moving forward, not slow, never rushed. Clear articulation of every syllable; natural short pauses at commas, slightly longer at full stops; lift slightly on questions.",
+   "out": "s09_A"
+  },
+  {
+   "text": "于是少数派被多数派拉去混搭，等于被冻住了。结果，产品竟比催化剂还纯。这叫“非线性效应”。",
+   "voice": "Charon",
+   "style": "Warm, lively Mandarin popular-science host explaining to beginners. Natural conversational pace - engaged and moving forward, not slow, never rushed. Clear articulation of every syllable; natural short pauses at commas, slightly longer at full stops; lift slightly on questions.",
+   "out": "s10_A"
+  },
+  {
+   "text": "日本化学家硖合宪三把它推到了极致。一九九五年，他找到一种会“自己造自己”的分子：左手分子造出更多左手分子，像复印机印出新的复印机，还越印越纯。",
+   "voice": "Charon",
+   "style": "Warm, lively Mandarin popular-science host explaining to beginners. Natural conversational pace - engaged and moving forward, not slow, never rushed. Clear articulation of every syllable; natural short pauses at commas, slightly longer at full stops; lift slightly on questions. The Japanese chemist's name in this line is read xiá hé xiàn sān (first syllable xiá, second tone, as in 侠/霞).",
+   "out": "s11_Ah"
+  },
+  {
+   "text": "日本化学家侠合宪三把它推到了极致。一九九五年，他找到一种会“自己造自己”的分子：左手分子造出更多左手分子，像复印机印出新的复印机，还越印越纯。",
+   "voice": "Charon",
+   "style": "Warm, lively Mandarin popular-science host explaining to beginners. Natural conversational pace - engaged and moving forward, not slow, never rushed. Clear articulation of every syllable; natural short pauses at commas, slightly longer at full stops; lift slightly on questions. The Japanese chemist's name in this line is read xiá hé xiàn sān (first syllable xiá, second tone, as in 侠/霞).",
+   "out": "s11_Ax"
+  },
+  {
+   "text": "二〇〇三年，他让起点只差一点：两百万个分子里，一方只多一个。三轮反应后，这一方超过百分之九十九点五。",
+   "voice": "Charon",
+   "style": "Warm, lively Mandarin popular-science host explaining to beginners. Natural conversational pace - engaged and moving forward, not slow, never rushed. Clear articulation of every syllable; natural short pauses at commas, slightly longer at full stops; lift slightly on questions.",
+   "out": "s12_A"
+  },
+  {
+   "text": "就算原料完全不带手性，反应也会自己“选边”，像抛硬币。",
+   "voice": "Charon",
+   "style": "Warm, lively Mandarin popular-science host explaining to beginners. Natural conversational pace - engaged and moving forward, not slow, never rushed. Clear articulation of every syllable; natural short pauses at commas, slightly longer at full stops; lift slightly on questions.",
+   "out": "s13_A"
+  },
+  {
+   "text": "所以，他们凭什么获奖？卡根证明，手性优势能被放大，不完美的催化剂也能造出更纯的药。硖合宪三则第一次在实验室里，做出了弗兰克的配方。",
+   "voice": "Charon",
+   "style": "Warm, lively Mandarin popular-science host explaining to beginners. Natural conversational pace - engaged and moving forward, not slow, never rushed. Clear articulation of every syllable; natural short pauses at commas, slightly longer at full stops; lift slightly on questions. The Japanese chemist's name in this line is read xiá hé xiàn sān (first syllable xiá, second tone, as in 侠/霞).",
+   "out": "s14_Ah"
+  },
+  {
+   "text": "所以，他们凭什么获奖？卡根证明，手性优势能被放大，不完美的催化剂也能造出更纯的药。侠合宪三则第一次在实验室里，做出了弗兰克的配方。",
+   "voice": "Charon",
+   "style": "Warm, lively Mandarin popular-science host explaining to beginners. Natural conversational pace - engaged and moving forward, not slow, never rushed. Clear articulation of every syllable; natural short pauses at commas, slightly longer at full stops; lift slightly on questions. The Japanese chemist's name in this line is read xiá hé xiàn sān (first syllable xiá, second tone, as in 侠/霞).",
+   "out": "s14_Ax"
+  },
+  {
+   "text": "生命为什么偏爱左手？答案还没找到。但他们证明了：哪怕起点只是一次抛硬币，化学自己也能把它放大成一边倒的世界。",
+   "voice": "Charon",
+   "style": "Warm, lively Mandarin popular-science host explaining to beginners. Natural conversational pace - engaged and moving forward, not slow, never rushed. Clear articulation of every syllable; natural short pauses at commas, slightly longer at full stops; lift slightly on questions.",
+   "out": "s15_A"
+  },
+  {
+   "text": "同一种分子，为什么可能是良药，也可能闯下大祸？",
+   "voice": "Charon",
+   "style": "Warm, curious popular-science host explaining to complete beginners. Measured, unhurried pace with every syllable clearly articulated, never rushed. Lively and engaged, a light smile in the voice. Natural pauses at commas, slightly longer at full stops; lift slightly on the question.",
+   "out": "s01_B"
+  },
+  {
+   "text": "上世纪六十年代，孕妇服用的镇静药沙利度胺，让数以千计的婴儿四肢残缺。后来发现，这种分子有“左手”和“右手”两个版本，在体内作用不同。",
+   "voice": "Charon",
+   "style": "Warm, curious popular-science host explaining to complete beginners. Measured, unhurried pace with every syllable clearly articulated, never rushed. Lively and engaged, a light smile in the voice. Natural pauses at commas, slightly longer at full stops; lift slightly on the question.",
+   "out": "s02_B"
+  },
+  {
+   "text": "分子怎么会有左右手？伸出双手：它们互为镜像，却怎么转都叠不到一起。很多分子也这样，这叫“手性”。",
+   "voice": "Charon",
+   "style": "Warm, curious popular-science host explaining to complete beginners. Measured, unhurried pace with every syllable clearly articulated, never rushed. Lively and engaged, a light smile in the voice. Natural pauses at commas, slightly longer at full stops; lift slightly on the question.",
+   "out": "s03_B"
+  },
+  {
+   "text": "最早看见它的，是一八四八年的巴斯德。他发现酒石酸盐的晶体分成镜像的两种，就用镊子一颗颗挑开。",
+   "voice": "Charon",
+   "style": "Warm, curious popular-science host explaining to complete beginners. Measured, unhurried pace with every syllable clearly articulated, never rushed. Lively and engaged, a light smile in the voice. Natural pauses at commas, slightly longer at full stops; lift slightly on the question.",
+   "out": "s04_B"
+  },
+  {
+   "text": "更怪的是，生命只用一只手。蛋白质里的氨基酸，几乎全是左手型。身体里的“锁”也分左右，药分子得是对的那把“钥匙”。",
+   "voice": "Charon",
+   "style": "Warm, curious popular-science host explaining to complete beginners. Measured, unhurried pace with every syllable clearly articulated, never rushed. Lively and engaged, a light smile in the voice. Natural pauses at commas, slightly longer at full stops; lift slightly on the question.",
+   "out": "s05_B"
+  },
+  {
+   "text": "可在烧瓶里，左右手总是一半对一半。怎么只造一种？办法是手性催化剂，它像一副左手手套模具，专门压出左手分子。这条路拿了二〇〇一年诺奖。",
+   "voice": "Charon",
+   "style": "Warm, curious popular-science host explaining to complete beginners. Measured, unhurried pace with every syllable clearly articulated, never rushed. Lively and engaged, a light smile in the voice. Natural pauses at commas, slightly longer at full stops; lift slightly on the question.",
+   "out": "s06_B"
+  },
+  {
+   "text": "但大家默认：模具多纯，产品就多纯。更大的谜是：最早的生命没有纯模具，单一手性从哪儿来？",
+   "voice": "Charon",
+   "style": "Warm, curious popular-science host explaining to complete beginners. Measured, unhurried pace with every syllable clearly articulated, never rushed. Lively and engaged, a light smile in the voice. Natural pauses at commas, slightly longer at full stops; lift slightly on the question.",
+   "out": "s07_B"
+  },
+  {
+   "text": "一九五三年，物理学家弗兰克写下一份“配方”：产物要能复制自己，还要压住自己的镜像。几十年来，没人做得出。",
+   "voice": "Charon",
+   "style": "Warm, curious popular-science host explaining to complete beginners. Measured, unhurried pace with every syllable clearly articulated, never rushed. Lively and engaged, a light smile in the voice. Natural pauses at commas, slightly longer at full stops; lift slightly on the question.",
+   "out": "s08_B"
+  },
+  {
+   "text": "一九八六年，法国化学家卡根打破了默认。他想到，催化剂常常是两个手性分子抱着一个金属原子干活。左配左、右配右，干得快；一左一右的混搭，几乎干不动。",
+   "voice": "Charon",
+   "style": "Warm, curious popular-science host explaining to complete beginners. Measured, unhurried pace with every syllable clearly articulated, never rushed. Lively and engaged, a light smile in the voice. Natural pauses at commas, slightly longer at full stops; lift slightly on the question.",
+   "out": "s09_B"
+  },
+  {
+   "text": "于是少数派被多数派拉去混搭，等于被冻住了。结果，产品竟比催化剂还纯。这叫“非线性效应”。",
+   "voice": "Charon",
+   "style": "Warm, curious popular-science host explaining to complete beginners. Measured, unhurried pace with every syllable clearly articulated, never rushed. Lively and engaged, a light smile in the voice. Natural pauses at commas, slightly longer at full stops; lift slightly on the question.",
+   "out": "s10_B"
+  },
+  {
+   "text": "日本化学家硖合宪三把它推到了极致。一九九五年，他找到一种会“自己造自己”的分子：左手分子造出更多左手分子，像复印机印出新的复印机，还越印越纯。",
+   "voice": "Charon",
+   "style": "Warm, curious popular-science host explaining to complete beginners. Measured, unhurried pace with every syllable clearly articulated, never rushed. Lively and engaged, a light smile in the voice. Natural pauses at commas, slightly longer at full stops; lift slightly on the question. The Japanese chemist's name in this line is read xiá hé xiàn sān (first syllable xiá, second tone, as in 侠/霞).",
+   "out": "s11_Bh"
+  },
+  {
+   "text": "日本化学家侠合宪三把它推到了极致。一九九五年，他找到一种会“自己造自己”的分子：左手分子造出更多左手分子，像复印机印出新的复印机，还越印越纯。",
+   "voice": "Charon",
+   "style": "Warm, curious popular-science host explaining to complete beginners. Measured, unhurried pace with every syllable clearly articulated, never rushed. Lively and engaged, a light smile in the voice. Natural pauses at commas, slightly longer at full stops; lift slightly on the question. The Japanese chemist's name in this line is read xiá hé xiàn sān (first syllable xiá, second tone, as in 侠/霞).",
+   "out": "s11_Bx"
+  },
+  {
+   "text": "二〇〇三年，他让起点只差一点：两百万个分子里，一方只多一个。三轮反应后，这一方超过百分之九十九点五。",
+   "voice": "Charon",
+   "style": "Warm, curious popular-science host explaining to complete beginners. Measured, unhurried pace with every syllable clearly articulated, never rushed. Lively and engaged, a light smile in the voice. Natural pauses at commas, slightly longer at full stops; lift slightly on the question.",
+   "out": "s12_B"
+  },
+  {
+   "text": "就算原料完全不带手性，反应也会自己“选边”，像抛硬币。",
+   "voice": "Charon",
+   "style": "Warm, curious popular-science host explaining to complete beginners. Measured, unhurried pace with every syllable clearly articulated, never rushed. Lively and engaged, a light smile in the voice. Natural pauses at commas, slightly longer at full stops; lift slightly on the question.",
+   "out": "s13_B"
+  },
+  {
+   "text": "所以，他们凭什么获奖？卡根证明，手性优势能被放大，不完美的催化剂也能造出更纯的药。硖合宪三则第一次在实验室里，做出了弗兰克的配方。",
+   "voice": "Charon",
+   "style": "Warm, curious popular-science host explaining to complete beginners. Measured, unhurried pace with every syllable clearly articulated, never rushed. Lively and engaged, a light smile in the voice. Natural pauses at commas, slightly longer at full stops; lift slightly on the question. The Japanese chemist's name in this line is read xiá hé xiàn sān (first syllable xiá, second tone, as in 侠/霞).",
+   "out": "s14_Bh"
+  },
+  {
+   "text": "所以，他们凭什么获奖？卡根证明，手性优势能被放大，不完美的催化剂也能造出更纯的药。侠合宪三则第一次在实验室里，做出了弗兰克的配方。",
+   "voice": "Charon",
+   "style": "Warm, curious popular-science host explaining to complete beginners. Measured, unhurried pace with every syllable clearly articulated, never rushed. Lively and engaged, a light smile in the voice. Natural pauses at commas, slightly longer at full stops; lift slightly on the question. The Japanese chemist's name in this line is read xiá hé xiàn sān (first syllable xiá, second tone, as in 侠/霞).",
+   "out": "s14_Bx"
+  },
+  {
+   "text": "生命为什么偏爱左手？答案还没找到。但他们证明了：哪怕起点只是一次抛硬币，化学自己也能把它放大成一边倒的世界。",
+   "voice": "Charon",
+   "style": "Warm, curious popular-science host explaining to complete beginners. Measured, unhurried pace with every syllable clearly articulated, never rushed. Lively and engaged, a light smile in the voice. Natural pauses at commas, slightly longer at full stops; lift slightly on the question.",
+   "out": "s15_B"
+  }
+ ]
+}
