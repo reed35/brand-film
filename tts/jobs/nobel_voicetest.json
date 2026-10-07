@@ -1,0 +1,23 @@
+{
+ "model": "gemini-3.8-flash-tts",
+ "rpm": 12,
+ "retries": 4,
+ "style": "Energetic, curious popular-science host. Brisk, upbeat pace, about 3.3 syllables per second. Clear standard Mandarin, a light smile in the voice, lift slightly on questions, short pauses only at full stops.",
+ "lines": [
+  {
+   "text": "伸出手，看看你的指甲盖。就在这一秒，大约650亿个来自太阳的粒子，正从它中间穿过。你毫无感觉。它们叫中微子。",
+   "voice": "Charon",
+   "out": "s1_charon"
+  },
+  {
+   "text": "伸出手，看看你的指甲盖。就在这一秒，大约650亿个来自太阳的粒子，正从它中间穿过。你毫无感觉。它们叫中微子。",
+   "voice": "Puck",
+   "out": "s1_puck"
+  },
+  {
+   "text": "伸出手，看看你的指甲盖。就在这一秒，大约650亿个来自太阳的粒子，正从它中间穿过。你毫无感觉。它们叫中微子。",
+   "voice": "Kore",
+   "out": "s1_kore"
+  }
+ ]
+}
