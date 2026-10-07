@@ -82,7 +82,8 @@ def _call(method, path, body=None, query=None, timeout=180, retries=None):
             txt = e.read().decode('utf-8', 'replace')
             err = {}
             try:
-                err = json.loads(txt).get('error', {})
+                body = json.loads(txt)
+                err = (body[0] if isinstance(body, list) and body else body).get('error', {})   # 402 prepay returns a list
                 msg = f"HTTP {e.code} {err.get('status', '')}: {err.get('message', '')}"
             except Exception:
                 msg = f'HTTP {e.code}: {txt[:300]}'
