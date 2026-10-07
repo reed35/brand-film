@@ -1,0 +1,54 @@
+{
+ "model": "gemini-3.8-flash-tts",
+ "style": "Cinematic documentary narration: calm, measured and unhurried, with warm gravitas. Leave a short, deliberate pause at each comma.",
+ "lines": [
+  {
+   "text": "Voice one: Charon.",
+   "voice": "Charon",
+   "style": "Neutral, clear announcer, brisk.",
+   "out": "1_charon_label"
+  },
+  {
+   "text": "朱雀三号遥二，2026年8月19日，一子级成功着陆。",
+   "voice": "Charon",
+   "out": "1_charon_zh"
+  },
+  {
+   "text": "Zhuque-3, flight two. August 19, 2026. The first stage lands.",
+   "voice": "Charon",
+   "out": "1_charon_en"
+  },
+  {
+   "text": "Voice two: Sulafat.",
+   "voice": "Sulafat",
+   "style": "Neutral, clear announcer, brisk.",
+   "out": "2_sulafat_label"
+  },
+  {
+   "text": "朱雀三号遥二，2026年8月19日，一子级成功着陆。",
+   "voice": "Sulafat",
+   "out": "2_sulafat_zh"
+  },
+  {
+   "text": "Zhuque-3, flight two. August 19, 2026. The first stage lands.",
+   "voice": "Sulafat",
+   "out": "2_sulafat_en"
+  },
+  {
+   "text": "Voice three: Gacrux.",
+   "voice": "Gacrux",
+   "style": "Neutral, clear announcer, brisk.",
+   "out": "3_gacrux_label"
+  },
+  {
+   "text": "朱雀三号遥二，2026年8月19日，一子级成功着陆。",
+   "voice": "Gacrux",
+   "out": "3_gacrux_zh"
+  },
+  {
+   "text": "Zhuque-3, flight two. August 19, 2026. The first stage lands.",
+   "voice": "Gacrux",
+   "out": "3_gacrux_en"
+  }
+ ]
+}

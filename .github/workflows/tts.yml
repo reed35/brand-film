@@ -1,0 +1,94 @@
+# Gemini TTS runner for brand-film voice-over (manual dispatch only; no PR triggers on this public repo).
+# The API key lives in the GEMINI_API_KEY repo secret. It is only exposed as an env var to bf_tts.py, which sends it
+# in a request header and never prints it; GitHub also masks it in logs.
+name: tts
+
+on:
+  workflow_dispatch:
+    inputs:
+      command:
+        description: "models | batch | voices"
+        type: choice
+        options: [batch, models, voices]
+        default: batch
+      spec_path:
+        description: "batch: path to a job JSON in the repo (e.g. tts/jobs/landspace_test.json)"
+        required: false
+        default: ""
+      spec_b64:
+        description: "batch: inline job JSON, base64-encoded (used if set; overrides spec_path)"
+        required: false
+        default: ""
+      require_model:
+        description: "models: fail if this model id is not listed"
+        required: false
+        default: "gemini-3.8-flash-tts"
+      voices_lang:
+        description: "voices: optional language_code filter, e.g. zh-CN"
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tts-${{ github.run_id }}
+
+jobs:
+  tts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install deps
+        run: python -m pip install --quiet numpy scipy
+
+      # All user inputs arrive via env (never interpolated into the script) to avoid shell injection.
+      - name: Run bf_tts
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          CMD: ${{ inputs.command }}
+          SPEC_PATH: ${{ inputs.spec_path }}
+          SPEC_B64: ${{ inputs.spec_b64 }}
+          REQUIRE_MODEL: ${{ inputs.require_model }}
+          VOICES_LANG: ${{ inputs.voices_lang }}
+        run: |
+          set -euo pipefail
+          mkdir -p tts_out
+          if [ -z "${GEMINI_API_KEY}" ]; then echo "GEMINI_API_KEY secret is not available"; exit 1; fi
+          case "$CMD" in
+            models)
+              args=(); [ -n "$REQUIRE_MODEL" ] && args=(--require "$REQUIRE_MODEL")
+              python scripts/bf_tts.py models "${args[@]}" | tee tts_out/models.txt ;;
+            voices)
+              args=(); [ -n "$VOICES_LANG" ] && args=(--lang "$VOICES_LANG")
+              python scripts/bf_tts.py voices "${args[@]}" | tee tts_out/voices.txt ;;
+            batch)
+              if [ -n "$SPEC_B64" ]; then
+                printf '%s' "$SPEC_B64" | base64 -d > tts_out/job.json
+              elif [ -n "$SPEC_PATH" ]; then
+                case "$SPEC_PATH" in /*|*..*) echo "spec_path must be a relative repo path"; exit 1;; esac
+                cp -- "$SPEC_PATH" tts_out/job.json
+              else
+                echo "batch needs spec_path or spec_b64"; exit 1
+              fi
+              python -c "import json;d=json.load(open('tts_out/job.json'));print(len(d['lines']),'lines, model',d.get('model','default'))"
+              python scripts/bf_tts.py batch --spec tts_out/job.json --outdir tts_out ;;
+            *) echo "unknown command"; exit 1 ;;
+          esac
+
+      - name: Upload artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tts-${{ inputs.command }}-${{ github.run_number }}
+          path: tts_out/
+          if-no-files-found: warn
+          retention-days: 30
