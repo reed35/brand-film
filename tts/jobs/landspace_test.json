@@ -1,5 +1,6 @@
 {
  "model": "gemini-3.8-flash-tts",
+ "rpm": 3,
  "style": "Cinematic documentary narration: calm, measured and unhurried, with warm gravitas. Leave a short, deliberate pause at each comma.",
  "lines": [
   {

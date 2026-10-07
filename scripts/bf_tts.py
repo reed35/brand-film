@@ -13,7 +13,7 @@ CLI
   python bf_tts.py say  --text-file line.txt ... [--model gemini-3.8-flash-tts] [--dry-run]
   python bf_tts.py models [--require gemini-3.8-flash-tts]   # TTS models visible to this key
   python bf_tts.py batch --spec job.json --outdir tts_out     # many lines -> WAVs + manifest.json
-     job.json = {"model": "...", "style": "default style", "voice": "Charon",
+     job.json = {"model": "...", "style": "default style", "voice": "Charon", "rpm": 3,
                  "lines": [{"text": "...", "voice": "Sulafat", "style": "...", "out": "zh_sulafat"}, ...]}
   python bf_tts.py voices [--lang zh-CN]        # Extended Voice Library
   python bf_tts.py duck --music mix.wav --vo vo.wav --at 12.5 [--vo vo2.wav --at 40] --out mix_vo.wav [--depth -9]
@@ -49,7 +49,7 @@ def _scrub(s):
     return s.replace(k, '***') if k else s
 
 
-def _call(method, path, body=None, query=None, timeout=180, retries=3):
+def _call(method, path, body=None, query=None, timeout=180, retries=6):
     url = f'{API}/{path}' + ('?' + urllib.parse.urlencode(query, doseq=True) if query else '')
     data = json.dumps(body).encode() if body is not None else None
     for attempt in range(retries):
@@ -66,7 +66,11 @@ def _call(method, path, body=None, query=None, timeout=180, retries=3):
             except Exception:
                 msg = f'HTTP {e.code}: {txt[:300]}'
             if e.code in (429, 500, 503) and attempt < retries - 1:
-                time.sleep(2 ** attempt * 2)
+                import re
+                hint = re.search(r'retry in ([0-9.]+)s', msg)           # free tier: 3 requests/min -> obey server hint
+                wait = float(hint.group(1)) + 1.5 if hint else min(60, 4 * 2 ** attempt)
+                print(f'  {e.code}, retrying in {wait:.0f}s', file=sys.stderr, flush=True)
+                time.sleep(wait)
                 continue
             raise TTSError(_scrub(msg)) from None
         except urllib.error.URLError as e:
@@ -229,8 +233,10 @@ def duck(music_path, vo_items, out_path, depth_db=-9.0, attack=.08, release=.45,
     return info
 
 
-def run_batch(spec, outdir, sleep=1.0):
-    """spec dict -> WAVs in outdir + manifest.json. Keeps going on per-line errors; returns the manifest."""
+def run_batch(spec, outdir, sleep=None):
+    """spec dict -> WAVs in outdir + manifest.json. Keeps going on per-line errors; returns the manifest.
+    spec["rpm"] paces requests (free tier = 3/min -> use 3); 429s are retried after the server's hint anyway."""
+    sleep = sleep if sleep is not None else (60.0 / spec['rpm'] if spec.get('rpm') else 1.0)
     os.makedirs(outdir, exist_ok=True)
     model, dstyle, dvoice = spec.get('model', MODEL), spec.get('style', DOC_STYLE), spec.get('voice', 'Charon')
     man = {'model': model, 'items': []}
@@ -245,9 +251,11 @@ def run_batch(spec, outdir, sleep=1.0):
         except Exception as e:
             it.update(ok=False, error=_scrub(str(e)))
         it['wall_s'] = round(time.time() - t0, 2)
+        wait = sleep - (time.time() - t0)
         print(('OK  ' if it['ok'] else 'ERR ') + f"{name} voice={it['voice']} " + (f"{it.get('seconds')}s" if it['ok'] else it['error']), flush=True)
         man['items'].append(it)
-        time.sleep(sleep)
+        if i < len(spec['lines']) - 1 and wait > 0:
+            time.sleep(wait)
     json.dump(man, open(os.path.join(outdir, 'manifest.json'), 'w'), ensure_ascii=False, indent=1)
     return man
 
