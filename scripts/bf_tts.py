@@ -13,7 +13,7 @@ CLI
   python bf_tts.py say  --text-file line.txt ... [--model gemini-3.8-flash-tts] [--dry-run]
   python bf_tts.py models [--require gemini-3.8-flash-tts]   # TTS models visible to this key
   python bf_tts.py batch --spec job.json --outdir tts_out     # many lines -> WAVs + manifest.json
-     job.json = {"model": "...", "style": "default style", "voice": "Charon", "rpm": 3,
+     job.json = {"model": "...", "style": "default style", "voice": "Charon", "rpm": 3, "retries": 6,
                  "lines": [{"text": "...", "voice": "Sulafat", "style": "...", "out": "zh_sulafat"}, ...]}
   python bf_tts.py voices [--lang zh-CN]        # Extended Voice Library
   python bf_tts.py duck --music mix.wav --vo vo.wav --at 12.5 [--vo vo2.wav --at 40] --out mix_vo.wav [--depth -9]
@@ -37,6 +37,25 @@ class TTSError(RuntimeError):
     pass
 
 
+EVENTS = []          # HTTP error events (429 quota details etc.), scrubbed; run_batch stores them per line
+RETRIES = 6
+
+
+def _quota_details(err):
+    """Pull QuotaFailure / RetryInfo out of a Google API error body."""
+    out = {}
+    for d in err.get('details', []) or []:
+        t = d.get('@type', '')
+        if t.endswith('QuotaFailure'):
+            out['violations'] = [{k: v.get(k) for k in ('quotaMetric', 'quotaId', 'quotaDimensions', 'quotaValue')}
+                                 for v in d.get('violations', [])]
+        elif t.endswith('RetryInfo'):
+            out['retryDelay'] = d.get('retryDelay')
+        elif t.endswith('ErrorInfo'):
+            out['reason'], out['metadata'] = d.get('reason'), d.get('metadata')
+    return out
+
+
 def _key():
     k = os.environ.get('GEMINI_API_KEY', '')
     if not k:
@@ -49,7 +68,8 @@ def _scrub(s):
     return s.replace(k, '***') if k else s
 
 
-def _call(method, path, body=None, query=None, timeout=180, retries=6):
+def _call(method, path, body=None, query=None, timeout=180, retries=None):
+    retries = retries or RETRIES
     url = f'{API}/{path}' + ('?' + urllib.parse.urlencode(query, doseq=True) if query else '')
     data = json.dumps(body).encode() if body is not None else None
     for attempt in range(retries):
@@ -60,11 +80,16 @@ def _call(method, path, body=None, query=None, timeout=180, retries=6):
                 return json.loads(r.read())
         except urllib.error.HTTPError as e:
             txt = e.read().decode('utf-8', 'replace')
+            err = {}
             try:
                 err = json.loads(txt).get('error', {})
                 msg = f"HTTP {e.code} {err.get('status', '')}: {err.get('message', '')}"
             except Exception:
                 msg = f'HTTP {e.code}: {txt[:300]}'
+            ev = json.loads(_scrub(json.dumps({'t': time.strftime('%H:%M:%S'), 'code': e.code, 'status': err.get('status'),
+                                               'message': err.get('message'), **_quota_details(err)})))
+            EVENTS.append(ev)
+            print('  HTTP event: ' + json.dumps(ev, ensure_ascii=False), file=sys.stderr, flush=True)
             if e.code in (429, 500, 503) and attempt < retries - 1:
                 import re
                 hint = re.search(r'retry in ((?:\d+h)?(?:\d+m)?(?:[0-9.]+s)?)', msg)   # obey server hint (free tier 3 RPM)
@@ -241,7 +266,9 @@ def duck(music_path, vo_items, out_path, depth_db=-9.0, attack=.08, release=.45,
 def run_batch(spec, outdir, sleep=None):
     """spec dict -> WAVs in outdir + manifest.json. Keeps going on per-line errors; returns the manifest.
     spec["rpm"] paces requests (free tier = 3/min -> use 3); 429s are retried after the server's hint anyway."""
+    global RETRIES
     sleep = sleep if sleep is not None else (60.0 / spec['rpm'] if spec.get('rpm') else 1.0)
+    RETRIES = int(spec.get('retries', RETRIES))
     os.makedirs(outdir, exist_ok=True)
     model, dstyle, dvoice = spec.get('model', MODEL), spec.get('style', DOC_STYLE), spec.get('voice', 'Charon')
     man = {'model': model, 'items': []}
@@ -250,12 +277,16 @@ def run_batch(spec, outdir, sleep=None):
         name = name if name.endswith('.wav') else name + '.wav'
         it = {'out': name, 'voice': ln.get('voice', dvoice), 'style': ln.get('style', dstyle), 'text': ln['text']}
         t0 = time.time()
+        n_ev = len(EVENTS)
+        it['started'] = time.strftime('%H:%M:%S')
         try:
             _, sec = synth(ln['text'], it['voice'], it['style'], os.path.join(outdir, name), ln.get('model', model))
             it.update(ok=True, seconds=round(sec, 3))
         except Exception as e:
             it.update(ok=False, error=_scrub(str(e)))
         it['wall_s'] = round(time.time() - t0, 2)
+        if len(EVENTS) > n_ev:
+            it['http_events'] = EVENTS[n_ev:]
         wait = sleep - (time.time() - t0)
         print(('OK  ' if it['ok'] else 'ERR ') + f"{name} voice={it['voice']} " + (f"{it.get('seconds')}s" if it['ok'] else it['error']), flush=True)
         man['items'].append(it)
