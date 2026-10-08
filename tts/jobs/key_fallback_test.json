@@ -1,0 +1,8 @@
+{
+ "model": "gemini-3.8-flash-tts",
+ "retries": 1,
+ "style": "Neutral, clear announcer, brisk.",
+ "lines": [
+  {"text": "Backup key test.", "voice": "Charon", "out": "key_test"}
+ ]
+}

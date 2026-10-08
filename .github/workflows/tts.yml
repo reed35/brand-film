@@ -1,6 +1,7 @@
 # Gemini TTS runner for brand-film voice-over (manual dispatch only; no PR triggers on this public repo).
-# The API key lives in the GEMINI_API_KEY repo secret. It is only exposed as an env var to bf_tts.py, which sends it
-# in a request header and never prints it; GitHub also masks it in logs.
+# API keys live in repo secrets GEMINI_API_KEY (primary) and GEMINI_API_KEY_2 (backup). They are only exposed as env vars to
+# bf_tts.py, which sends them in a request header and never prints them; GitHub also masks them in logs.
+# On HTTP 429/402 bf_tts switches to the other key slot at once (either direction); manifest.json records the slot name per item.
 name: tts
 
 on:
@@ -27,6 +28,11 @@ on:
         description: "voices: optional language_code filter, e.g. zh-CN"
         required: false
         default: ""
+      force_key:
+        description: "auto = primary, fall back to backup on 429/402 (and back). primary/backup = use only that key (testing)"
+        type: choice
+        options: [auto, primary, backup]
+        default: auto
 
 permissions:
   contents: read
@@ -54,6 +60,8 @@ jobs:
       - name: Run bf_tts
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_API_KEY_2: ${{ secrets.GEMINI_API_KEY_2 }}
+          BF_TTS_FORCE_KEY: ${{ inputs.force_key }}
           CMD: ${{ inputs.command }}
           SPEC_PATH: ${{ inputs.spec_path }}
           SPEC_B64: ${{ inputs.spec_b64 }}
@@ -62,7 +70,8 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p tts_out
-          if [ -z "${GEMINI_API_KEY}" ]; then echo "GEMINI_API_KEY secret is not available"; exit 1; fi
+          echo "key slots: primary=$([ -n "${GEMINI_API_KEY}" ] && echo set || echo unset) backup=$([ -n "${GEMINI_API_KEY_2}" ] && echo set || echo unset) force_key=${BF_TTS_FORCE_KEY:-auto}"
+          if [ -z "${GEMINI_API_KEY}${GEMINI_API_KEY_2}" ]; then echo "neither GEMINI_API_KEY nor GEMINI_API_KEY_2 is available"; exit 1; fi
           case "$CMD" in
             models)
               args=(); [ -n "$REQUIRE_MODEL" ] && args=(--require "$REQUIRE_MODEL")

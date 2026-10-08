@@ -5,8 +5,13 @@ Docs (2026-10): https://ai.google.dev/gemini-api/docs/speech-generation
   text = verbatim transcript; delivery/pace go in speech_metadata.style; inline <pause>-style tags for momentary events.
   Unary output = WAV (RIFF), 24 kHz mono s16le.
 
-The API key is read from $GEMINI_API_KEY and is only ever sent in a request header. It is never printed, logged,
-written to disk, or put in a URL; any error text is scrubbed of it before it is raised.
+API keys come from two slots: "primary" = $GEMINI_API_KEY and "backup" = $GEMINI_API_KEY_2. Key values are only ever
+sent in a request header. They are never printed, logged, written to disk, or put in a URL; error text is scrubbed of both.
+Key fallback: when the active slot gets HTTP 429 (rate limit / daily quota) or 402 (prepay credits depleted), the request is
+re-sent right away with the other slot, and that slot stays active for the rest of the run. This works in both directions.
+A slot that got a short "retry in Ns" hint can be used again once the hint has passed; a daily quota or a 402 blocks it for
+the whole run. The manifest records the slot name (never the value) behind every item.
+$BF_TTS_FORCE_KEY=primary|backup pins one slot and turns fallback off (for testing); empty/auto = primary first, then fallback.
 
 CLI
   python bf_tts.py say  --text "..." --voice Charon --style "cinematic documentary narrator, measured" --out vo.wav
@@ -56,56 +61,135 @@ def _quota_details(err):
     return out
 
 
+KEY_SLOTS = (('primary', 'GEMINI_API_KEY'), ('backup', 'GEMINI_API_KEY_2'))
+ACTIVE = None        # active slot name; picked lazily, then sticky for the rest of the run
+BLOCKED = {}         # slot -> time.time() until which it is blocked (float('inf') = for the rest of this run)
+LAST_SLOT = None     # slot that produced the most recent successful response
+SWITCHES = []        # key-slot switches, e.g. {'t', 'from', 'to', 'code'}
+
+
+def _slot_key(slot):
+    return os.environ.get(dict(KEY_SLOTS)[slot], '')
+
+
+def _forced():
+    f = os.environ.get('BF_TTS_FORCE_KEY', '').strip().lower()
+    if f in ('', 'auto'):
+        return None
+    if f not in dict(KEY_SLOTS):
+        raise TTSError(f'BF_TTS_FORCE_KEY must be auto, primary or backup (got {f!r})')
+    return f
+
+
+def _slots():
+    """Slots allowed in this run, in preference order (only the configured ones)."""
+    f = _forced()
+    names = [f] if f else [n for n, _ in KEY_SLOTS]
+    have = [n for n in names if _slot_key(n)]
+    if not have:
+        raise TTSError(('the forced key slot %r has no key' % f) if f else 'neither GEMINI_API_KEY nor GEMINI_API_KEY_2 is set')
+    return have
+
+
+def _active():
+    global ACTIVE
+    if ACTIVE not in _slots():
+        ACTIVE = _slots()[0]
+    return ACTIVE
+
+
 def _key():
-    k = os.environ.get('GEMINI_API_KEY', '')
-    if not k:
-        raise TTSError('GEMINI_API_KEY is not set')
-    return k
+    return _slot_key(_active())
 
 
 def _scrub(s):
-    k = os.environ.get('GEMINI_API_KEY', '')
-    return s.replace(k, '***') if k else s
+    for _, env in KEY_SLOTS:
+        k = os.environ.get(env, '')
+        if k:
+            s = s.replace(k, '***')
+    return s
+
+
+def _retry_wait(msg, err_details, attempt):
+    """Seconds the server wants us to wait (hint in message or RetryInfo), else exponential backoff."""
+    import re
+    hint = re.search(r'retry in ((?:\d+h)?(?:\d+m)?(?:[0-9.]+s)?)', msg)
+    rd = (err_details or {}).get('retryDelay')
+    src = hint.group(1) if hint and hint.group(1) else (rd if isinstance(rd, str) else '')
+    if src:
+        hms = dict((u, float(v)) for v, u in re.findall(r'([0-9.]+)([hms])', src))
+        return hms.get('h', 0) * 3600 + hms.get('m', 0) * 60 + hms.get('s', 0) + 1.5, True
+    return min(60, 4 * 2 ** attempt), False
 
 
 def _call(method, path, body=None, query=None, timeout=180, retries=None):
+    """One API call with key-slot fallback. Retries (429/500/503 waits, network) are limited to `retries`;
+    an immediate switch to the other key slot does not use up a retry."""
+    global ACTIVE, LAST_SLOT
     retries = retries or RETRIES
     url = f'{API}/{path}' + ('?' + urllib.parse.urlencode(query, doseq=True) if query else '')
     data = json.dumps(body).encode() if body is not None else None
-    for attempt in range(retries):
+    attempt, switches = 0, 0
+    while True:
+        slot = _active()
         req = urllib.request.Request(url, data=data, method=method,
                                      headers={'x-goog-api-key': _key(), 'Content-Type': 'application/json'})
         try:
             with urllib.request.urlopen(req, timeout=timeout) as r:
-                return json.loads(r.read())
+                out = json.loads(r.read())
+            LAST_SLOT = slot
+            return out
         except urllib.error.HTTPError as e:
             txt = e.read().decode('utf-8', 'replace')
             err = {}
             try:
-                body = json.loads(txt)
-                err = (body[0] if isinstance(body, list) and body else body).get('error', {})   # 402 prepay returns a list
+                body_ = json.loads(txt)
+                err = (body_[0] if isinstance(body_, list) and body_ else body_).get('error', {})   # 402 prepay returns a list
                 msg = f"HTTP {e.code} {err.get('status', '')}: {err.get('message', '')}"
             except Exception:
                 msg = f'HTTP {e.code}: {txt[:300]}'
-            ev = json.loads(_scrub(json.dumps({'t': time.strftime('%H:%M:%S'), 'code': e.code, 'status': err.get('status'),
-                                               'message': err.get('message'), **_quota_details(err)})))
+            qd = _quota_details(err)
+            ev = json.loads(_scrub(json.dumps({'t': time.strftime('%H:%M:%S'), 'key_slot': slot, 'code': e.code,
+                                               'status': err.get('status'), 'message': err.get('message'), **qd})))
             EVENTS.append(ev)
             print('  HTTP event: ' + json.dumps(ev, ensure_ascii=False), file=sys.stderr, flush=True)
-            if e.code in (429, 500, 503) and attempt < retries - 1:
-                import re
-                hint = re.search(r'retry in ((?:\d+h)?(?:\d+m)?(?:[0-9.]+s)?)', msg)   # obey server hint (free tier 3 RPM)
-                wait = min(60, 4 * 2 ** attempt)
-                if hint and hint.group(1):
-                    hms = dict((u, float(v)) for v, u in re.findall(r'([0-9.]+)([hms])', hint.group(1)))
-                    wait = hms.get('h', 0) * 3600 + hms.get('m', 0) * 60 + hms.get('s', 0) + 1.5
-                if wait > 120:                                          # daily quota exhausted: don't sit on it
-                    raise TTSError(_scrub(msg)) from None
+            if e.code in (429, 402):
+                wait, hinted = _retry_wait(msg, qd, attempt)
+                # 402 (no credits) or a long / daily-quota 429: this slot is done for the run. Short hint: blocked until it passes.
+                daily = 'per day' in msg.lower() or any('PerDay' in str(v.get('quotaId', '')) for v in qd.get('violations', []))
+                BLOCKED[slot] = float('inf') if (e.code == 402 or wait > 120 or daily) else time.time() + wait
+                now = time.time()
+                others = [s_ for s_ in _slots() if s_ != slot and BLOCKED.get(s_, 0) <= now]
+                if others and switches < 2 * len(KEY_SLOTS):
+                    ACTIVE = others[0]
+                    switches += 1
+                    SWITCHES.append({'t': time.strftime('%H:%M:%S'), 'from': slot, 'to': ACTIVE, 'code': e.code})
+                    print(f'  {e.code} on {slot} key -> switching to {ACTIVE} key now', file=sys.stderr, flush=True)
+                    continue
+                # every allowed slot is blocked: wait for the soonest one if that is short, else give up
+                soon = min(_slots(), key=lambda s_: BLOCKED.get(s_, 0))
+                wait = BLOCKED.get(soon, 0) - now
+                if e.code == 429 and wait <= 120 and attempt < retries - 1:
+                    attempt += 1
+                    print(f'  429, all key slots limited; retrying on {soon} in {max(wait, 0):.0f}s', file=sys.stderr, flush=True)
+                    time.sleep(max(wait, 0))
+                    if soon != slot:
+                        SWITCHES.append({'t': time.strftime('%H:%M:%S'), 'from': slot, 'to': soon, 'code': e.code,
+                                         'waited_s': round(max(wait, 0), 1)})
+                    ACTIVE = soon
+                    continue
+                raise TTSError(_scrub(msg) + f' [key slot: {slot}; no other key slot available]') from None
+            if e.code in (500, 503) and attempt < retries - 1:
+                wait, _ = _retry_wait(msg, qd, attempt)
+                wait = min(wait, 60)
+                attempt += 1
                 print(f'  {e.code}, retrying in {wait:.0f}s', file=sys.stderr, flush=True)
                 time.sleep(wait)
                 continue
-            raise TTSError(_scrub(msg)) from None
+            raise TTSError(_scrub(msg) + f' [key slot: {slot}]') from None
         except urllib.error.URLError as e:
             if attempt < retries - 1:
+                attempt += 1
                 time.sleep(2)
                 continue
             raise TTSError(_scrub(f'network error: {e.reason}')) from None
@@ -272,7 +356,7 @@ def run_batch(spec, outdir, sleep=None):
     RETRIES = int(spec.get('retries', RETRIES))
     os.makedirs(outdir, exist_ok=True)
     model, dstyle, dvoice = spec.get('model', MODEL), spec.get('style', DOC_STYLE), spec.get('voice', 'Charon')
-    man = {'model': model, 'items': []}
+    man = {'model': model, 'force_key': _forced() or 'auto', 'key_slots_configured': _slots(), 'items': []}
     for i, ln in enumerate(spec['lines']):
         name = os.path.basename(ln.get('out') or f'line_{i:02d}')
         name = name if name.endswith('.wav') else name + '.wav'
@@ -282,17 +366,20 @@ def run_batch(spec, outdir, sleep=None):
         it['started'] = time.strftime('%H:%M:%S')
         try:
             _, sec = synth(ln['text'], it['voice'], it['style'], os.path.join(outdir, name), ln.get('model', model))
-            it.update(ok=True, seconds=round(sec, 3))
+            it.update(ok=True, seconds=round(sec, 3), key_slot=LAST_SLOT)      # slot NAME only, never the key
         except Exception as e:
-            it.update(ok=False, error=_scrub(str(e)))
+            it.update(ok=False, error=_scrub(str(e)), key_slot=None, last_tried_slot=ACTIVE)
         it['wall_s'] = round(time.time() - t0, 2)
         if len(EVENTS) > n_ev:
             it['http_events'] = EVENTS[n_ev:]
         wait = sleep - (time.time() - t0)
-        print(('OK  ' if it['ok'] else 'ERR ') + f"{name} voice={it['voice']} " + (f"{it.get('seconds')}s" if it['ok'] else it['error']), flush=True)
+        print(('OK  ' if it['ok'] else 'ERR ') + f"{name} voice={it['voice']} key={it['key_slot'] or '-'} "
+              + (f"{it.get('seconds')}s" if it['ok'] else it['error']), flush=True)
         man['items'].append(it)
         if i < len(spec['lines']) - 1 and wait > 0:
             time.sleep(wait)
+    man['key_switches'] = SWITCHES
+    man['key_slot_counts'] = {n: sum(1 for x in man['items'] if x.get('key_slot') == n) for n, _ in KEY_SLOTS}
     json.dump(man, open(os.path.join(outdir, 'manifest.json'), 'w'), ensure_ascii=False, indent=1)
     return man
 
@@ -317,10 +404,24 @@ def main():
                 print(json.dumps(build_request(text, a.voice, a.style, a.model), ensure_ascii=False, indent=1))
                 return
             p, sec = synth(text, a.voice, a.style, a.out, a.model)
-            print(f'wrote {p} ({sec:.2f} s)')
+            print(f'wrote {p} ({sec:.2f} s) with the {LAST_SLOT} key')
         elif a.cmd == 'models':
+            global ACTIVE
+            slots = _slots()
+            print('key slots configured: ' + ', '.join(n + ('=set' if _slot_key(n) else '=unset') for n, _ in KEY_SLOTS)
+                  + f"; force_key={_forced() or 'auto'}")
+            for sl in slots[1:]:                               # quick GET per extra slot (no TTS cost, no fallback)
+                ACTIVE = sl
+                saved = BLOCKED.copy(); BLOCKED.update({o: float('inf') for o in slots if o != sl})
+                try:
+                    ok_ = any(m['name'] in (a.require or MODEL, 'models/' + (a.require or MODEL)) for m in list_models())
+                    print(f"slot {sl}: key accepted, {a.require or MODEL} {'FOUND' if ok_ else 'MISSING'}")
+                except TTSError as e:
+                    print(f'slot {sl}: ERROR {e}')
+                BLOCKED.clear(); BLOCKED.update(saved)
+            ACTIVE = slots[0]
             ms = list_models()
-            print(f'{len(ms)} models visible to this key; TTS models:')
+            print(f'slot {LAST_SLOT}: {len(ms)} models visible to this key; TTS models:')
             for m in ms:
                 if a.all or 'tts' in m['name'] or 'speech' in m.get('displayName', '').lower():
                     print(' ', m['name'], '|', m.get('displayName', ''), '|', ','.join(m.get('supportedGenerationMethods', [])),
