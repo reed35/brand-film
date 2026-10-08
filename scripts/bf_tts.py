@@ -356,7 +356,7 @@ def run_batch(spec, outdir, sleep=None):
     RETRIES = int(spec.get('retries', RETRIES))
     os.makedirs(outdir, exist_ok=True)
     model, dstyle, dvoice = spec.get('model', MODEL), spec.get('style', DOC_STYLE), spec.get('voice', 'Charon')
-    man = {'model': model, 'force_key': _forced() or 'auto', 'key_slots_configured': _slots(), 'items': []}
+    man = {'model': model, 'force_key': _forced() or 'auto', 'key_slots_allowed': _slots(), 'items': []}
     for i, ln in enumerate(spec['lines']):
         name = os.path.basename(ln.get('out') or f'line_{i:02d}')
         name = name if name.endswith('.wav') else name + '.wav'
